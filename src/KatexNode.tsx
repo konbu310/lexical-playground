@@ -6,12 +6,13 @@ import {
   DecoratorNode,
   EditorConfig,
   KEY_ESCAPE_COMMAND,
-  LexicalEditor,
   LexicalNode,
   NodeKey,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import { FC, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { KatexEditor } from "./KatexEditor";
+import { KatexRenderer } from "./KatexRenderer";
 
 const HighPriority: CommandListenerHighPriority = 3;
 
@@ -29,9 +30,9 @@ export const KatexComponent: FC<KatexComponentProps> = ({
   const [editor] = useLexicalComposerContext();
   const [katexValue, setKatexValue] = useState(katex);
   const [showKatexEditor, setShowKatexEditor] = useState(false);
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const onHide = useCallback(
+  const onHideKatexEditor = useCallback(
     (restoreSelection?: boolean) => {
       setShowKatexEditor(false);
       editor.update(() => {
@@ -56,7 +57,7 @@ export const KatexComponent: FC<KatexComponentProps> = ({
             const activeElement = document.activeElement;
             const inputElement = inputRef.current;
             if (inputElement !== activeElement) {
-              onHide();
+              onHideKatexEditor();
             }
             return false;
           },
@@ -68,7 +69,7 @@ export const KatexComponent: FC<KatexComponentProps> = ({
             const activeElement = document.activeElement;
             const inputElement = inputRef.current;
             if (inputElement !== activeElement) {
-              onHide();
+              onHideKatexEditor();
               return true;
             }
             return false;
@@ -77,9 +78,26 @@ export const KatexComponent: FC<KatexComponentProps> = ({
         )
       );
     }
-  }, []);
+  }, [editor, onHideKatexEditor, showKatexEditor]);
 
-  return <div></div>;
+  if (showKatexEditor) {
+    return (
+      <KatexEditor
+        katex={katexValue}
+        setKatex={setKatexValue}
+        inline={inline}
+        inputRef={inputRef}
+      />
+    );
+  }
+
+  return (
+    <KatexRenderer
+      inline={inline}
+      onClick={() => setShowKatexEditor(true)}
+      value={katexValue}
+    />
+  );
 };
 
 export class KatexNode extends DecoratorNode<ReactNode> {
