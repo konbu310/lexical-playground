@@ -16,7 +16,7 @@ const EditorPriority: CommandListenerEditorPriority = 0;
 export const INSERT_KATEX_COMMAND: LexicalCommand<{
   katex: string;
   inline: boolean;
-}> = createCommand();
+}> = createCommand<{ katex: string; inline: boolean }>();
 
 export const KatexPlugin = () => {
   const [editor] = useLexicalComposerContext();

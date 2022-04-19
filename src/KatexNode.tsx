@@ -106,15 +106,16 @@ export class KatexNode extends DecoratorNode<ReactNode> {
   }
 
   static clone(node: KatexNode): KatexNode {
-    return new KatexNode(node.katex, node.inline, node.key);
+    return new KatexNode(node.katex, node.inline, node.__key);
   }
 
-  constructor(
-    private katex: string,
-    private inline = false,
-    private key: NodeKey = ""
-  ) {
+  private katex: string;
+  private inline: boolean;
+
+  constructor(katex: string, inline?: boolean, key?: NodeKey) {
     super(key);
+    this.katex = katex;
+    this.inline = inline ?? false;
   }
 
   createDOM<EditorContext>(config: EditorConfig<EditorContext>): HTMLElement {
@@ -137,7 +138,7 @@ export class KatexNode extends DecoratorNode<ReactNode> {
       <KatexComponent
         katex={this.katex}
         inline={this.inline}
-        nodeKey={this.key}
+        nodeKey={this.__key}
       />
     );
   }
