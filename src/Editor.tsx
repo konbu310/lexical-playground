@@ -1,25 +1,25 @@
-import { $getRoot, EditorState, EditorThemeClasses } from "lexical";
-import { FC, useEffect } from "react";
 import LexicalComposer from "@lexical/react/LexicalComposer";
-import LexicalPlainTextPlugin from "@lexical/react/LexicalPlainTextPlugin";
-import LexicalRichTextPlugin from "@lexical/react/LexicalRichTextPlugin";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import LexicalContentEditable from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import LexicalOnChangePlugin from "@lexical/react/LexicalOnChangePlugin";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import LexicalPlainTextPlugin from "@lexical/react/LexicalPlainTextPlugin";
+import {
+  $getRoot,
+  EditorState,
+  EditorThemeClasses,
+  LexicalNode,
+  NodeMap,
+} from "lexical";
+import { FC, useRef } from "react";
 import { KatexModal } from "./KatexModal";
 import { KatexNode } from "./KatexNode";
-import { KatexPlugin } from "./KatexPlugin";
+import { INSERT_KATEX_COMMAND, KatexPlugin } from "./KatexPlugin";
+import { Placeholder } from "./Placeholder";
+import { editor, editorRoot } from "./styles.css";
 import { useToggle } from "./useToggle";
 
 const theme: EditorThemeClasses = {};
-
-const onChange = (editorState: EditorState) => {
-  editorState.read(() => {
-    const root = $getRoot();
-    console.log(root.getTextContent());
-  });
-};
 
 const onError = (error: Error) => {
   console.error(error);
@@ -27,34 +27,66 @@ const onError = (error: Error) => {
 
 const nodes = [KatexNode];
 
-const UseKatexModal: FC = () => {
+const InsertKatexButton: FC = () => {
   const [editor] = useLexicalComposerContext();
-  const [isShowModal, toggleIsShowModal] = useToggle(false);
 
-  return (
-    <>
-      <button onClick={toggleIsShowModal}>Show Modal</button>
+  const handleClick = () => {
+    editor.dispatchCommand(INSERT_KATEX_COMMAND, {
+      katex: "1+1",
+      inline: true,
+    });
+  };
 
-      {isShowModal && (
-        <KatexModal activeEditor={editor} onClose={toggleIsShowModal} />
-      )}
-    </>
-  );
+  return <button onClick={handleClick}>Insert Katex</button>;
+};
+
+const parse = ([key, node]: [string, LexicalNode]) => {
+  switch (key) {
+    case "root":
+      break;
+    default:
+      break;
+  }
+};
+
+const findNodeByKey = (nodes: [string, LexicalNode][], key: string) => {
+  return nodes.find((node) => node[0] === key);
 };
 
 export const Editor: FC<{}> = ({}) => {
   const initialConfig = { theme, onError, nodes };
+  const editorStateRef = useRef<EditorState | null>(null);
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <UseKatexModal />
+      <InsertKatexButton />
+
       <KatexPlugin />
-      <LexicalRichTextPlugin
-        contentEditable={<LexicalContentEditable />}
-        placeholder={<div>Enter some text...</div>}
-      />
-      <LexicalOnChangePlugin onChange={onChange} />
+
+      <div className={editorRoot} onFocus={() => console.log("focus")}>
+        <LexicalPlainTextPlugin
+          contentEditable={<LexicalContentEditable className={editor} />}
+          placeholder={<Placeholder value="問題を入力" />}
+        />
+        <LexicalOnChangePlugin
+          onChange={(editorState) => (editorStateRef.current = editorState)}
+        />
+      </div>
+
       <HistoryPlugin />
+
+      <div>
+        <button
+          onClick={() => {
+            if (editorStateRef.current) {
+              const nodeMap = editorStateRef.current?.toJSON()._nodeMap;
+              nodeMap?.map((node) => {});
+            }
+          }}
+        >
+          Log Content
+        </button>
+      </div>
     </LexicalComposer>
   );
 };

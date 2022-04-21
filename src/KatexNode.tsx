@@ -106,45 +106,46 @@ export class KatexNode extends DecoratorNode<ReactNode> {
   }
 
   static clone(node: KatexNode): KatexNode {
-    return new KatexNode(node.katex, node.inline, node.__key);
+    return new KatexNode(node.__katex, node.__inline, node.__key);
   }
 
-  private katex: string;
-  private inline: boolean;
-
-  constructor(katex: string, inline?: boolean, key?: NodeKey) {
+  constructor(
+    private __katex: string,
+    private __inline: boolean = true,
+    key?: NodeKey
+  ) {
     super(key);
-    this.katex = katex;
-    this.inline = inline ?? false;
   }
 
   createDOM<EditorContext>(config: EditorConfig<EditorContext>): HTMLElement {
-    return document.createElement(this.inline ? "span" : "div");
+    return document.createElement(this.__inline ? "span" : "div");
   }
 
   updateDOM(prevNode: KatexNode): boolean {
     // If the inline property changes, replace the element
-    return this.inline !== prevNode.inline;
+    return this.__inline !== prevNode.__inline;
   }
 
   setKatex(katex: string): void {
     // TODO: Better types
-    const writable = this.getWritable() as any;
-    writable.katex = katex;
+    const writable = this.getWritable();
+    if ($isKatexNode(writable)) {
+      writable.__katex = katex;
+    }
   }
 
   decorate(): ReactNode {
     return (
       <KatexComponent
-        katex={this.katex}
-        inline={this.inline}
+        katex={this.__katex}
+        inline={this.__inline}
         nodeKey={this.__key}
       />
     );
   }
 }
 
-export const $createKatexNode = (katex = "", inline = false): KatexNode => {
+export const $createKatexNode = (katex = "", inline = true): KatexNode => {
   return new KatexNode(katex, inline);
 };
 

@@ -6,6 +6,7 @@ import {
   SetStateAction,
   useCallback,
 } from "react";
+import { KatexRenderer } from "./KatexRenderer";
 
 type KatexEditorProps = {
   katex: string;
@@ -28,10 +29,14 @@ export const KatexEditor: FC<KatexEditorProps> = ({
   );
 
   return (
-    <span>
+    <span style={{ position: "relative" }}>
       <span>$</span>
       <input value={katex} onChange={onChange} autoFocus ref={inputRef} />
       <span>$</span>
+
+      <span style={{ position: "absolute", top: "250%", left: 0 }}>
+        <KatexRenderer value={katex} inline={inline} onClick={() => {}} />
+      </span>
     </span>
   );
 };
