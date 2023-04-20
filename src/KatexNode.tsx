@@ -2,7 +2,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { mergeRegister } from "@lexical/utils";
 import {
   $getNodeByKey,
-  CommandListenerHighPriority,
+  COMMAND_PRIORITY_HIGH,
   DecoratorNode,
   EditorConfig,
   KEY_ESCAPE_COMMAND,
@@ -14,7 +14,7 @@ import { FC, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { KatexEditor } from "./KatexEditor";
 import { KatexRenderer } from "./KatexRenderer";
 
-const HighPriority: CommandListenerHighPriority = 3;
+const HighPriority = COMMAND_PRIORITY_HIGH;
 
 type KatexComponentProps = {
   katex: string;
@@ -117,7 +117,7 @@ export class KatexNode extends DecoratorNode<ReactNode> {
     super(key);
   }
 
-  createDOM<EditorContext>(config: EditorConfig<EditorContext>): HTMLElement {
+  createDOM<EditorContext>(config: EditorConfig): HTMLElement {
     return document.createElement(this.__inline ? "span" : "div");
   }
 
@@ -132,6 +132,14 @@ export class KatexNode extends DecoratorNode<ReactNode> {
     if ($isKatexNode(writable)) {
       writable.__katex = katex;
     }
+  }
+
+  exportJSON() {
+    return {
+      type: "katex",
+      version: 1,
+      value: this.__katex,
+    };
   }
 
   decorate(): ReactNode {
