@@ -5,5 +5,8 @@ import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "./",
+  build: {
+    outDir: "docs",
+  },
   plugins: [react(), vanillaExtractPlugin()],
 });
