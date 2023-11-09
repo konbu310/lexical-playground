@@ -2,7 +2,7 @@ import { LexicalEditor } from "lexical";
 import { ChangeEventHandler, FC, useCallback, useState } from "react";
 import { INSERT_KATEX_COMMAND } from "./KatexPlugin";
 import { KatexRenderer } from "./KatexRenderer";
-import { useToggle } from "./useToggle";
+import { useToggle } from "./hooks";
 
 export const KatexModal: FC<{
   activeEditor: LexicalEditor;
