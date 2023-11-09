@@ -10,8 +10,6 @@
   "dependencies": {
     "@lexical/react": "^0.12.2",
     "@lexical/utils": "^0.12.2",
-    "@vanilla-extract/css": "^1.13.0",
-    "@vanilla-extract/vite-plugin": "^3.9.0",
     "katex": "^0.16.9",
     "lexical": "^0.12.2",
     "react": "^18.2.0",

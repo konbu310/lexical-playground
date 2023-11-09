@@ -15,7 +15,6 @@ import { FC, useRef } from "react";
 import { KatexNode } from "./KatexNode";
 import { INSERT_KATEX_COMMAND, KatexPlugin } from "./KatexPlugin";
 import { Placeholder } from "./Placeholder";
-import { editor, editorRoot } from "./styles.css";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 
 const theme: EditorThemeClasses = {};
@@ -73,9 +72,9 @@ export const Editor: FC<{}> = ({}) => {
 
       <KatexPlugin />
 
-      <div className={editorRoot} onFocus={() => console.log("focus")}>
+      <div className="editor-root" onFocus={() => console.log("focus")}>
         <PlainTextPlugin
-          contentEditable={<ContentEditable className={editor} />}
+          contentEditable={<ContentEditable className="editor" />}
           placeholder={<Placeholder value="問題を入力" />}
           ErrorBoundary={LexicalErrorBoundary}
         />
