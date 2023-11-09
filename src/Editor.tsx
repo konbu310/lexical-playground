@@ -1,4 +1,7 @@
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import {
+  InitialConfigType,
+  LexicalComposer,
+} from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -16,6 +19,7 @@ import { KatexNode } from "./KatexNode";
 import { INSERT_KATEX_COMMAND, KatexPlugin } from "./KatexPlugin";
 import { Placeholder } from "./Placeholder";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { Button, Divider, Flex } from "antd";
 
 const theme: EditorThemeClasses = {};
 
@@ -30,29 +34,23 @@ const InsertKatexButton: FC = () => {
 
   const handleClick = () => {
     editor.dispatchCommand(INSERT_KATEX_COMMAND, {
-      katex: "1+1",
+      katex: "",
       inline: true,
     });
   };
 
-  return <button onClick={handleClick}>Insert Katex</button>;
-};
-
-const parse = ([key, node]: [string, LexicalNode]) => {
-  switch (key) {
-    case "root":
-      break;
-    default:
-      break;
-  }
-};
-
-const findNodeByKey = (nodes: [string, LexicalNode][], key: string) => {
-  return nodes.find((node) => node[0] === key);
+  return <Button onClick={handleClick}>Insert Katex</Button>;
 };
 
 export const Editor: FC<{}> = ({}) => {
-  const initialConfig = { theme, onError, nodes, namespace: "MathInput" };
+  const initialConfig: InitialConfigType = {
+    theme,
+    onError,
+    nodes,
+    namespace: "MathInput",
+    editorState:
+      '{"root":{"children":[{"children":[{"type":"katex","version":1,"value":"2x+3y"}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}',
+  };
   const editorStateRef = useRef<EditorState | null>(null);
 
   function onChange(editorState: EditorState) {
@@ -61,18 +59,15 @@ export const Editor: FC<{}> = ({}) => {
       // Read the contents of the EditorState here.
       const root = $getRoot();
       const selection = $getSelection();
-
-      console.log(root, selection);
+      console.log(root.getTextContent());
     });
   }
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <InsertKatexButton />
-
       <KatexPlugin />
 
-      <div className="editor-root" onFocus={() => console.log("focus")}>
+      <div className="editor-root">
         <PlainTextPlugin
           contentEditable={<ContentEditable className="editor" />}
           placeholder={<Placeholder value="問題を入力" />}
@@ -83,17 +78,21 @@ export const Editor: FC<{}> = ({}) => {
 
       <HistoryPlugin />
 
-      <div>
-        <button
+      <Divider />
+
+      <Flex gap="1rem">
+        <InsertKatexButton />
+
+        <Button
           onClick={() => {
             if (editorStateRef.current) {
-              console.log(editorStateRef.current?.toJSON());
+              console.log(JSON.stringify(editorStateRef.current?.toJSON()));
             }
           }}
         >
           Log Content
-        </button>
-      </div>
+        </Button>
+      </Flex>
     </LexicalComposer>
   );
 };

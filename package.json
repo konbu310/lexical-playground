@@ -10,8 +10,11 @@
   "dependencies": {
     "@lexical/react": "^0.12.2",
     "@lexical/utils": "^0.12.2",
+    "antd": "^5.11.0",
+    "constate": "^3.3.2",
     "katex": "^0.16.9",
     "lexical": "^0.12.2",
+    "mathlive": "^0.95.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

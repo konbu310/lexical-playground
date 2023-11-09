@@ -1,44 +1,51 @@
-import { LexicalEditor } from "lexical";
-import { ChangeEventHandler, FC, useCallback, useState } from "react";
-import { INSERT_KATEX_COMMAND } from "./KatexPlugin";
-import { KatexRenderer } from "./KatexRenderer";
-import { useToggle } from "./hooks";
+import React, { FC, useState } from "react";
+import { MathInput } from "./MathInput";
+import { Input, Modal, Space } from "antd";
 
 export const KatexModal: FC<{
-  activeEditor: LexicalEditor;
-  onClose: VoidFunction;
-}> = ({ activeEditor, onClose }) => {
-  const [text, setText] = useState("");
-  const [inline, toggleInline] = useToggle(true);
-
-  const onConfirm = useCallback(() => {
-    activeEditor.dispatchCommand(INSERT_KATEX_COMMAND, { katex: text, inline });
-    onClose();
-  }, [activeEditor, onClose, text, inline]);
-
-  const onChangeValue: ChangeEventHandler<HTMLInputElement> = (ev) => {
-    console.log(ev.currentTarget.value);
-    setText(ev.currentTarget.value);
-  };
+  value: string;
+  isOpen: boolean;
+  onClose: (value: string) => void;
+}> = ({ value, isOpen, onClose }) => {
+  const [text, setText] = useState(value);
 
   return (
-    <div>
-      <div>
-        Inline:{" "}
-        <input type="checkbox" checked={inline} onChange={toggleInline} />
-      </div>
+    <Modal
+      open={isOpen}
+      onOk={() => onClose(text)}
+      onCancel={() => onClose(value)}
+      closeIcon={false}
+      centered
+      width={650}
+      maskClosable={false}
+      closable={false}
+      styles={{
+        mask: {
+          zIndex: 1,
+          pointerEvents: "none",
+        },
+      }}
+    >
+      <Space direction="vertical" style={{ width: "100%" }} size="middle">
+        <MathInput
+          value={text}
+          onChange={(ev) => {
+            const value = ev.currentTarget.value;
+            console.log("MathInput: ", value);
+            setText(value);
+          }}
+        />
 
-      <div>
-        <input value={text} onChange={onChangeValue} />
-      </div>
-
-      <div>
-        <KatexRenderer value={text} inline={inline} onClick={() => {}} />
-      </div>
-
-      <div>
-        <button onClick={onConfirm}>Confirm</button>
-      </div>
-    </div>
+        <Input
+          size="large"
+          value={text}
+          onChange={(ev) => {
+            const value = ev.currentTarget.value;
+            setText(value);
+          }}
+          style={{ fontSize: "1.2rem" }}
+        />
+      </Space>
+    </Modal>
   );
 };

@@ -32,12 +32,12 @@ export const KatexPlugin = () => {
         const { katex, inline } = payload;
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {
-          const katexNode = $createKatexNode(katex, inline);
+          const katexNode = $createKatexNode(katex, inline, true);
           (selection as RangeSelection).insertNodes([katexNode]);
         }
         return true;
       },
-      EditorPriority
+      EditorPriority,
     );
   }, [editor]);
 

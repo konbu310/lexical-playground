@@ -1,102 +1,61 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { mergeRegister } from "@lexical/utils";
 import {
   $getNodeByKey,
-  COMMAND_PRIORITY_HIGH,
   DecoratorNode,
   EditorConfig,
-  KEY_ESCAPE_COMMAND,
   LexicalNode,
   NodeKey,
-  SELECTION_CHANGE_COMMAND,
+  SerializedLexicalNode,
 } from "lexical";
-import { FC, ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { KatexEditor } from "./KatexEditor";
+import { FC, ReactNode, useCallback, useRef, useState } from "react";
 import { KatexRenderer } from "./KatexRenderer";
-
-const HighPriority = COMMAND_PRIORITY_HIGH;
+import { KatexModal } from "./KatexModal";
 
 type KatexComponentProps = {
   katex: string;
   inline: boolean;
   nodeKey: NodeKey;
+  showModalOnMount: boolean;
 };
 
 export const KatexComponent: FC<KatexComponentProps> = ({
   katex,
   inline,
   nodeKey,
+  showModalOnMount = false,
 }) => {
   const [editor] = useLexicalComposerContext();
   const [katexValue, setKatexValue] = useState(katex);
-  const [showKatexEditor, setShowKatexEditor] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [showKatexModal, setShowKatexModal] = useState(showModalOnMount);
 
-  const onHideKatexEditor = useCallback(
-    (restoreSelection?: boolean) => {
-      setShowKatexEditor(false);
+  const onCloseModal = useCallback(
+    (value: string) => {
+      setShowKatexModal(false);
+      setKatexValue(value);
       editor.update(() => {
         const node = $getNodeByKey(nodeKey);
         if ($isKatexNode(node)) {
-          node.setKatex(katexValue);
-          if (restoreSelection) {
-            node.selectNext(0, 0);
-          }
+          node.setKatex(value);
+          node.selectNext(0, 0);
         }
       });
     },
-    [editor, katexValue, nodeKey]
+    [editor, katexValue, nodeKey],
   );
 
-  useEffect(() => {
-    if (showKatexEditor) {
-      mergeRegister(
-        editor.registerCommand(
-          SELECTION_CHANGE_COMMAND,
-          (payload) => {
-            const activeElement = document.activeElement;
-            const inputElement = inputRef.current;
-            if (inputElement !== activeElement) {
-              onHideKatexEditor();
-            }
-            return false;
-          },
-          HighPriority
-        ),
-        editor.registerCommand(
-          KEY_ESCAPE_COMMAND,
-          (payload) => {
-            const activeElement = document.activeElement;
-            const inputElement = inputRef.current;
-            if (inputElement !== activeElement) {
-              onHideKatexEditor();
-              return true;
-            }
-            return false;
-          },
-          HighPriority
-        )
-      );
-    }
-  }, [editor, onHideKatexEditor, showKatexEditor]);
-
-  if (showKatexEditor) {
-    return (
-      <KatexEditor
-        katex={katexValue}
-        setKatex={setKatexValue}
-        inline={inline}
-        inputRef={inputRef}
-      />
-    );
-  }
-
   return (
-    <KatexRenderer
-      inline={inline}
-      onClick={() => setShowKatexEditor(true)}
-      value={katexValue}
-    />
+    <>
+      <KatexRenderer
+        inline={inline}
+        onClick={() => setShowKatexModal(true)}
+        value={katexValue}
+      />
+      <KatexModal
+        value={katexValue}
+        isOpen={showKatexModal}
+        onClose={onCloseModal}
+      />
+    </>
   );
 };
 
@@ -106,13 +65,19 @@ export class KatexNode extends DecoratorNode<ReactNode> {
   }
 
   static clone(node: KatexNode): KatexNode {
-    return new KatexNode(node.__katex, node.__inline, node.__key);
+    return new KatexNode(
+      node.__katex,
+      node.__inline,
+      node.__showModalOnMount,
+      node.__key,
+    );
   }
 
   constructor(
     private __katex: string,
     private __inline: boolean = true,
-    key?: NodeKey
+    private __showModalOnMount: boolean = false,
+    key?: NodeKey,
   ) {
     super(key);
   }
@@ -134,6 +99,10 @@ export class KatexNode extends DecoratorNode<ReactNode> {
     }
   }
 
+  getTextContent(): string {
+    return String.raw`\(${this.__katex}\)`;
+  }
+
   exportJSON() {
     return {
       type: "katex",
@@ -142,19 +111,28 @@ export class KatexNode extends DecoratorNode<ReactNode> {
     };
   }
 
+  static importJSON(json: any): KatexNode {
+    return $createKatexNode(json.value, true, false);
+  }
+
   decorate(): ReactNode {
     return (
       <KatexComponent
         katex={this.__katex}
         inline={this.__inline}
         nodeKey={this.__key}
+        showModalOnMount={this.__showModalOnMount}
       />
     );
   }
 }
 
-export const $createKatexNode = (katex = "", inline = true): KatexNode => {
-  return new KatexNode(katex, inline);
+export const $createKatexNode = (
+  katex = "",
+  inline = true,
+  showModalOnMount = false,
+): KatexNode => {
+  return new KatexNode(katex, inline, showModalOnMount);
 };
 
 export const $isKatexNode = (node: LexicalNode | null): node is KatexNode => {
