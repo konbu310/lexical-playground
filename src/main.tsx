@@ -1,10 +1,20 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import React, { FC } from "react";
+import { createRoot } from "react-dom/client";
 import { Editor } from "./Editor";
 import "./style.css";
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+const App: FC<{}> = ({}) => {
+  return (
+    <div style={{ margin: 50 }}>
+      <h1>Lexical Math Editor</h1>
+      <Editor initialValue="" />
+    </div>
+  );
+};
+
+const root = createRoot(document.getElementById("root")!);
+root.render(
   <React.StrictMode>
-    <Editor />
+    <App />
   </React.StrictMode>,
 );

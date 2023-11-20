@@ -1,24 +1,28 @@
+:root {
+  --keyboard-zindex: 9999;
+}
+
 .editor-root {
-    position: relative;
+  position: relative;
 }
 
 .editor {
-    border: 1px solid black;
-    padding: 0 8px;
+  border: 1px solid black;
+  padding: 0 8px;
 }
 
 .editor:focus ~ .placeholder {
-    opacity: 0.25;
+  opacity: 0.25;
 }
 
 .placeholder {
-    position: absolute;
-    top: 50%;
-    left: 8px;
-    transform: translateY(-50%);
-    color: grey;
-    user-select: none;
-    pointer-events: none;
-    display: inline-block;
-    transition: opacity 300ms;
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  color: grey;
+  user-select: none;
+  pointer-events: none;
+  display: inline-block;
+  transition: opacity 300ms;
 }

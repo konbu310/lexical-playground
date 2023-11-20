@@ -25,7 +25,7 @@ export const KatexEditor: FC<KatexEditorProps> = ({
     (event) => {
       setKatex(event.target.value);
     },
-    [setKatex]
+    [setKatex],
   );
 
   return (
