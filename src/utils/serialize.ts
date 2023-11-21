@@ -1,46 +1,91 @@
-import { InitialEditorStateType } from "@lexical/react/LexicalComposer";
+import { SerializedEditorState, SerializedLexicalNode } from "lexical";
+import { assertNever } from "./assertNever";
 
-const sample = {
-  root: {
-    children: [
-      {
-        children: [
-          {
-            type: "math",
-            version: 1,
-            value: "2x+3y=10",
-          },
-          {
-            detail: 0,
-            format: 0,
-            mode: "normal",
-            style: "",
-            text: "について考えなさい",
-            type: "text",
-            version: 1,
-          },
-        ],
-        direction: "ltr",
-        format: "",
-        indent: 0,
-        type: "paragraph",
-        version: 1,
-      },
-    ],
-    direction: "ltr",
-    format: "",
-    indent: 0,
-    type: "root",
-    version: 1,
-  },
+type CustomNode =
+  | SerializedParagraphNode
+  | SerializedMathNode
+  | SerializedTextNode
+  | SerializedLineBreakNode;
+
+type SerializedParagraphNode = SerializedLexicalNode & {
+  type: "paragraph";
+  children: CustomNode[];
 };
 
-export function toEditorState(value: string): InitialEditorStateType {
-  return JSON.stringify({
-    root: {
-      children: [],
-    },
-  });
+type SerializedTextNode = SerializedLexicalNode & {
+  type: "text";
+  text: string;
+};
+
+type SerializedMathNode = SerializedLexicalNode & {
+  type: "math";
+  value: string;
+};
+
+type SerializedLineBreakNode = SerializedLexicalNode & {
+  type: "linebreak";
+};
+
+export function editorStateSerializer(
+  value: SerializedEditorState<CustomNode>,
+) {
+  const res: string[] = [];
+  for (const node of value.root.children) {
+    if (node.type === "paragraph") {
+      if (res.length !== 0) res.push("\n");
+      for (const child of node.children) {
+        if (child.type === "paragraph") {
+        } else if (child.type === "math") {
+          res.push(String.raw`\$${child.value}\$`);
+        } else if (child.type === "text") {
+          res.push(child.text);
+        } else if (child.type === "linebreak") {
+          res.push("<br />");
+        } else {
+          assertNever(child);
+        }
+      }
+    }
+  }
+  return res.join("");
 }
 
-export function fromEditorState() {}
+export function editorStateDeserializer(value: string) {
+  const regexp = new RegExp(String.raw`(\\\$.+?\\\$|<br />)`);
+  const root = {
+    type: "root",
+    version: 1,
+    children: [] as CustomNode[],
+  };
+
+  for (const paragraph of value.split("\n")) {
+    const children: CustomNode[] = [];
+    for (const text of paragraph.split(regexp)) {
+      if (text.startsWith("\\$")) {
+        children.push({
+          type: "math",
+          version: 1,
+          value: text.replaceAll("\\$", ""),
+        });
+      } else if (text.startsWith("<br />")) {
+        children.push({
+          type: "linebreak",
+          version: 1,
+        });
+      } else {
+        children.push({
+          type: "text",
+          version: 1,
+          text,
+        });
+      }
+    }
+    root.children.push({
+      type: "paragraph",
+      version: 1,
+      children,
+    });
+  }
+
+  return JSON.stringify({ root });
+}

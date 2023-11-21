@@ -7,7 +7,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { Button, Divider, Flex } from "antd";
 import {
   $getRoot,
@@ -19,6 +19,10 @@ import { FC, useRef } from "react";
 import { MathNode } from "./nodes/MathNode";
 import { INSERT_MATH_COMMAND, MathPlugin } from "./plugins/MathPlugin";
 import { Placeholder } from "./ui/Placeholder";
+import {
+  editorStateDeserializer,
+  editorStateSerializer,
+} from "./utils/serialize";
 
 const theme: EditorThemeClasses = {};
 
@@ -47,40 +51,7 @@ export const Editor: FC<{ initialValue: string }> = ({ initialValue }) => {
     onError,
     nodes,
     namespace: "MathInput",
-    editorState: JSON.stringify({
-      root: {
-        children: [
-          {
-            children: [
-              {
-                type: "math",
-                version: 1,
-                value: "2x+3y=10",
-              },
-              {
-                // detail: 0,
-                // format: 0,
-                mode: "normal",
-                // style: "",
-                text: "について考えなさい",
-                type: "text",
-                version: 1,
-              },
-            ],
-            // direction: "ltr",
-            // format: "",
-            indent: 0,
-            type: "paragraph",
-            version: 1,
-          },
-        ],
-        // direction: "ltr",
-        // format: "",
-        indent: 0,
-        type: "root",
-        version: 1,
-      },
-    }),
+    editorState: editorStateDeserializer(initialValue),
   };
   const editorStateRef = useRef<EditorState | null>(null);
 
@@ -90,7 +61,6 @@ export const Editor: FC<{ initialValue: string }> = ({ initialValue }) => {
       // Read the contents of the EditorState here.
       const root = $getRoot();
       const selection = $getSelection();
-      console.log(root.getTextContent());
     });
   }
 
@@ -99,7 +69,7 @@ export const Editor: FC<{ initialValue: string }> = ({ initialValue }) => {
       <MathPlugin />
 
       <div className="editor-root">
-        <PlainTextPlugin
+        <RichTextPlugin
           contentEditable={<ContentEditable className="editor" />}
           placeholder={<Placeholder value="問題を入力" />}
           ErrorBoundary={LexicalErrorBoundary}
@@ -117,7 +87,12 @@ export const Editor: FC<{ initialValue: string }> = ({ initialValue }) => {
         <Button
           onClick={() => {
             if (editorStateRef.current) {
-              console.log(editorStateRef.current?.toJSON());
+              const json = editorStateRef.current.toJSON() as any;
+              console.log("json: ", json);
+              const s = editorStateSerializer(json);
+              console.log("serialized: ", s);
+              const d = editorStateDeserializer(s);
+              console.log("deserialized: ", JSON.parse(d));
             }
           }}
         >
