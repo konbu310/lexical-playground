@@ -13,33 +13,22 @@ export const KatexRenderer: FC<{
   useEffect(() => {
     const katexElement = katexElementRef.current;
     if (katexElement instanceof HTMLSpanElement) {
-      // katex.render(value, katexElement, {
-      //   displayMode: !inline,
-      //   errorColor: "#cc0000",
-      //   output: "html",
-      //   strict: "warn",
-      //   throwOnError: false,
-      //   trust: false,
-      // });
       renderMathInElement(katexElement);
     }
   }, [value, inline]);
 
   return (
-    <span
-      role="button"
-      tabIndex={-1}
-      onClick={onClick}
-      ref={katexElementRef}
-      style={{
-        // padding: "8px",
-        // backgroundColor: "rgba(160, 216, 239, 0.5)",
-        // border: "3px solid blue",
-        cursor: "pointer",
-        fontSize: "1.2rem",
-      }}
-    >
-      {String.raw`\(${value}\)`}
+    <span>
+      {String.fromCharCode(160)}
+      <span
+        style={{
+          cursor: "pointer",
+          fontSize: "1.2rem",
+        }}
+        ref={katexElementRef}
+        onClick={onClick}
+      >{String.raw`\(${value}\)`}</span>
+      {String.fromCharCode(160)}
     </span>
   );
 };

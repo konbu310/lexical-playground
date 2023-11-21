@@ -12,7 +12,6 @@ import {
   $getSelection,
   EditorState,
   EditorThemeClasses,
-  LexicalNode,
 } from "lexical";
 import { FC, useRef } from "react";
 import { KatexNode } from "./KatexNode";
@@ -42,14 +41,46 @@ const InsertKatexButton: FC = () => {
   return <Button onClick={handleClick}>Insert Katex</Button>;
 };
 
-export const Editor: FC<{}> = ({}) => {
+export const Editor: FC<{ initialValue: string }> = ({ initialValue }) => {
   const initialConfig: InitialConfigType = {
     theme,
     onError,
     nodes,
     namespace: "MathInput",
-    editorState:
-      '{"root":{"children":[{"children":[{"type":"katex","version":1,"value":"2x+3y"}],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}',
+    editorState: JSON.stringify({
+      root: {
+        children: [
+          {
+            children: [
+              {
+                type: "katex",
+                version: 1,
+                value: "2x+3y=10",
+              },
+              {
+                // detail: 0,
+                // format: 0,
+                mode: "normal",
+                // style: "",
+                text: "について考えなさい",
+                type: "text",
+                version: 1,
+              },
+            ],
+            // direction: "ltr",
+            // format: "",
+            indent: 0,
+            type: "paragraph",
+            version: 1,
+          },
+        ],
+        // direction: "ltr",
+        // format: "",
+        indent: 0,
+        type: "root",
+        version: 1,
+      },
+    }),
   };
   const editorStateRef = useRef<EditorState | null>(null);
 
@@ -86,7 +117,7 @@ export const Editor: FC<{}> = ({}) => {
         <Button
           onClick={() => {
             if (editorStateRef.current) {
-              console.log(JSON.stringify(editorStateRef.current?.toJSON()));
+              console.log(editorStateRef.current?.toJSON());
             }
           }}
         >
