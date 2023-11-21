@@ -40,7 +40,7 @@ export function editorStateSerializer(
         } else if (child.type === "text") {
           res.push(child.text);
         } else if (child.type === "linebreak") {
-          res.push("<br />");
+          res.push("\n");
         } else {
           assertNever(child);
         }
@@ -51,7 +51,7 @@ export function editorStateSerializer(
 }
 
 export function editorStateDeserializer(value: string) {
-  const regexp = new RegExp(String.raw`(\\\$.+?\\\$|<br />)`);
+  const regexp = new RegExp(String.raw`(\\\$.+?\\\$)`);
   const root = {
     type: "root",
     version: 1,
@@ -66,11 +66,6 @@ export function editorStateDeserializer(value: string) {
           type: "math",
           version: 1,
           value: text.replaceAll("\\$", ""),
-        });
-      } else if (text.startsWith("<br />")) {
-        children.push({
-          type: "linebreak",
-          version: 1,
         });
       } else {
         children.push({

@@ -9,7 +9,8 @@ const App: FC<{}> = ({}) => {
     <div style={{ margin: 50 }}>
       <h1>Lexical Math Editor</h1>
       <Editor
-        initialValue={String.raw`\$2x+3y\$について考えなさい<br />ほげほげ`}
+        initialValue={String.raw`\$2x+3y\$について考えなさい
+ほげほげ`}
       />
     </div>
   );
