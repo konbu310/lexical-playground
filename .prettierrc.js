@@ -6,6 +6,7 @@ const config = {
   semi: true,
   experimentalTernaries: true,
   printWidth: 80,
+  plugins: ["prettier-plugin-organize-imports"],
 };
 
 module.exports = config;

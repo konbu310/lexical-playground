@@ -1,4 +1,3 @@
-import { EditorState } from "lexical";
 import { InitialEditorStateType } from "@lexical/react/LexicalComposer";
 
 const sample = {
@@ -7,7 +6,7 @@ const sample = {
       {
         children: [
           {
-            type: "katex",
+            type: "math",
             version: 1,
             value: "2x+3y=10",
           },

@@ -1,3 +1,4 @@
+import type { MathfieldElement } from "mathlive";
 import {
   DetailedHTMLProps,
   FC,
@@ -6,8 +7,6 @@ import {
   useEffect,
   useRef,
 } from "react";
-import type { MathfieldElement } from "mathlive";
-import "//unpkg.com/mathlive";
 
 declare global {
   namespace JSX {

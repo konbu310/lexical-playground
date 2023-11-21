@@ -4,9 +4,11 @@ import {
 } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
+import { Button, Divider, Flex } from "antd";
 import {
   $getRoot,
   $getSelection,
@@ -14,11 +16,9 @@ import {
   EditorThemeClasses,
 } from "lexical";
 import { FC, useRef } from "react";
-import { KatexNode } from "./KatexNode";
-import { INSERT_KATEX_COMMAND, KatexPlugin } from "./KatexPlugin";
-import { Placeholder } from "./Placeholder";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
-import { Button, Divider, Flex } from "antd";
+import { MathNode } from "./nodes/MathNode";
+import { INSERT_MATH_COMMAND, MathPlugin } from "./plugins/MathPlugin";
+import { Placeholder } from "./ui/Placeholder";
 
 const theme: EditorThemeClasses = {};
 
@@ -26,19 +26,19 @@ const onError = (error: Error) => {
   console.error(error);
 };
 
-const nodes = [KatexNode];
+const nodes = [MathNode];
 
-const InsertKatexButton: FC = () => {
+const InsertMathButton: FC = () => {
   const [editor] = useLexicalComposerContext();
 
   const handleClick = () => {
-    editor.dispatchCommand(INSERT_KATEX_COMMAND, {
-      katex: "",
+    editor.dispatchCommand(INSERT_MATH_COMMAND, {
+      math: "",
       inline: true,
     });
   };
 
-  return <Button onClick={handleClick}>Insert Katex</Button>;
+  return <Button onClick={handleClick}>Insert Math</Button>;
 };
 
 export const Editor: FC<{ initialValue: string }> = ({ initialValue }) => {
@@ -53,7 +53,7 @@ export const Editor: FC<{ initialValue: string }> = ({ initialValue }) => {
           {
             children: [
               {
-                type: "katex",
+                type: "math",
                 version: 1,
                 value: "2x+3y=10",
               },
@@ -96,7 +96,7 @@ export const Editor: FC<{ initialValue: string }> = ({ initialValue }) => {
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <KatexPlugin />
+      <MathPlugin />
 
       <div className="editor-root">
         <PlainTextPlugin
@@ -112,7 +112,7 @@ export const Editor: FC<{ initialValue: string }> = ({ initialValue }) => {
       <Divider />
 
       <Flex gap="1rem">
-        <InsertKatexButton />
+        <InsertMathButton />
 
         <Button
           onClick={() => {

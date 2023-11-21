@@ -26,3 +26,53 @@
   display: inline-block;
   transition: opacity 300ms;
 }
+
+/*
+
+    Math Renderer
+
+ */
+.math-renderer-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  border: 1px dashed transparent;
+  border-radius: 8px;
+  transition: border 300ms;
+}
+
+.math-renderer-container:hover {
+  border: 1px dashed black;
+}
+
+.math-renderer {
+  font-size: 1.2rem;
+  user-select: none;
+  pointer-events: none;
+}
+
+.math-renderer-delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  justify-content: center;
+  align-items: center;
+  transform: translate(50%, -50%);
+  font-size: 1rem;
+  font-weight: bold;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: white;
+  border-radius: 50%;
+  border: lightgray thin solid;
+  cursor: pointer;
+  display: none;
+  opacity: 0;
+  color: red;
+  transition: opacity 300ms;
+}
+
+.math-renderer-container:hover .math-renderer-delete {
+  display: flex;
+  opacity: 1;
+}
