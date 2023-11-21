@@ -1,3 +1,4 @@
+import "mathlive";
 import type { MathfieldElement } from "mathlive";
 import {
   DetailedHTMLProps,

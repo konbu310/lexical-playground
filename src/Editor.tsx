@@ -9,22 +9,16 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { Button, Divider, Flex } from "antd";
-import {
-  $getRoot,
-  $getSelection,
-  EditorState,
-  EditorThemeClasses,
-} from "lexical";
+import { $getRoot, $getSelection, EditorState } from "lexical";
 import { FC, useRef } from "react";
 import { MathNode } from "./nodes/MathNode";
 import { INSERT_MATH_COMMAND, MathPlugin } from "./plugins/MathPlugin";
+import { theme } from "./theme";
 import { Placeholder } from "./ui/Placeholder";
 import {
   editorStateDeserializer,
   editorStateSerializer,
 } from "./utils/serialize";
-
-const theme: EditorThemeClasses = {};
 
 const onError = (error: Error) => {
   console.error(error);

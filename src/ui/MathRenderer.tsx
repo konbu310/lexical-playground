@@ -7,7 +7,7 @@ export const MathRenderer: FC<{ math: string }> = ({ math }) => {
   useEffect(() => {
     const mathElm = mathRef.current;
     if (mathElm instanceof HTMLSpanElement) {
-      renderMathInElement(mathElm);
+      renderMathInElement(mathElm, {});
     }
   }, [math]);
 
@@ -15,6 +15,6 @@ export const MathRenderer: FC<{ math: string }> = ({ math }) => {
     <span
       ref={mathRef}
       className="math-renderer"
-    >{String.raw`\(${math}\)`}</span>
+    >{String.raw`$$${math}$$`}</span>
   );
 };

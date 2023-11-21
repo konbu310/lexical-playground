@@ -8,7 +8,7 @@
 
 .editor {
   border: 1px solid black;
-  padding: 0 8px;
+  padding: 8px;
 }
 
 .editor:focus ~ .placeholder {
@@ -46,9 +46,11 @@
 }
 
 .math-renderer {
-  font-size: 1.2rem;
+  font-size: 1rem;
   user-select: none;
   pointer-events: none;
+  display: inline-block;
+  height: fit-content;
 }
 
 .math-renderer-delete {
@@ -75,4 +77,17 @@
 .math-renderer-container:hover .math-renderer-delete {
   display: flex;
   opacity: 1;
+}
+
+.katex-display {
+  margin: 2px 0 !important;
+}
+
+/*
+
+  Theme
+
+ */
+.lexical__paragraph {
+  margin: 2px 0;
 }
