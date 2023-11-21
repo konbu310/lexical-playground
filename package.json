@@ -9,12 +9,12 @@
     "fmt": "prettier --write 'src/**/*.{ts,tsx,css}'"
   },
   "dependencies": {
-    "@lexical/react": "^0.12.2",
-    "@lexical/utils": "^0.12.2",
-    "antd": "^5.11.1",
+    "@lexical/react": "^0.12.4",
+    "@lexical/utils": "^0.12.4",
+    "antd": "^5.11.2",
     "constate": "^3.3.2",
     "katex": "^0.16.9",
-    "lexical": "^0.12.2",
+    "lexical": "^0.12.4",
     "mathlive": "^0.96.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
